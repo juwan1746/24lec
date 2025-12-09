@@ -8,9 +8,8 @@ const cors = require('cors'); // 모듈 불러오기
 
 // ... (다른 설정들)
 
- // <--- 이 한 줄만 추가하면 브라우저 차단이 풀립니다.
+// <--- 이 한 줄만 추가하면 브라우저 차단이 풀립니다.
 
-// app.use('/api', apiRouter);
 // Passport는 DB 모델 이전에 require되어야 합니다.
 const passport = require('passport');
 require('./app_api/models/db');
@@ -44,16 +43,21 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// 1. 정적 파일 및 빌드 폴더 설정
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'app_public', 'build/')));
+app.use(express.static(path.join(__dirname, 'app_public', 'build'))); // React 빌드 파일 서비스
 
 // Passport는 정적 라우트 이후, 인증을 사용할 라우트(API) 이전에 초기화되어야 합니다.
 app.use(passport.initialize());
 
+// --- 라우팅 설정 ---
+// API 라우터 설정
 app.use('/api', apiRouter);
-// CORS 설정 업데이트: Authorization 헤더 추가
 
-
+// 서버(SSR/Express 뷰 템플릿) 라우터 설정 (이전 로그의 404 오류를 해결하기 위해 추가)
+app.use('/', indexRouter);
+app.use('/users', usersRouter); // 필요한 경우 추가
 
 // --- 오류 핸들러 ---
 
@@ -62,7 +66,7 @@ app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res
         .status(401)
-  .json({"message": err.name + ": " + err.message});
+        .json({"message": err.name + ": " + err.message});
   }
   // UnauthorizedError가 아닌 경우 다음 오류 핸들러로 전달
   next(err);
@@ -82,7 +86,17 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  // 이전 로그에서 발생한 "Failed to lookup view 'error'" 오류를 해결하기 위해,
+  // API 요청이었을 경우 JSON 응답을 보내도록 처리 로직 추가 가능
+  if (req.originalUrl.startsWith('/api/')) {
+    res.json({
+      message: err.message,
+      error: res.locals.error
+    });
+  } else {
+    // API 요청이 아니면 뷰 템플릿 렌더링
+    res.render('error');
+  }
 });
 
 module.exports = app;
