@@ -37,8 +37,16 @@ app.use('/api', (req, res, next) => {
 });
 // view engine setup
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('views', path.join(__dirname, 'app_server', 'views'));
+// [수정 전] - 이렇게 하면 아래 줄이 윗 줄을 덮어써 버립니다.
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('views', path.join(__dirname, 'app_server', 'views'));
+
+// [수정 후] - 배열([])을 사용하여 두 경로를 모두 등록합니다.
+app.set('views', [
+  path.join(__dirname, 'views'),
+  path.join(__dirname, 'app_server', 'views')
+]);
+app.set('view engine', 'pug');
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
