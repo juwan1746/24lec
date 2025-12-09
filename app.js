@@ -90,6 +90,7 @@ app.use(function(req, res, next) {
 
 // error handler (기존 Express 기본 오류 핸들러)
 app.use(function(err, req, res, next) {
+  console.error("🔥🔥 에러 발생 확인: ", err);
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
