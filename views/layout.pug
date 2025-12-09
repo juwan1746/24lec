@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    meta(name='viewport', content='width-device-width, initial-scale-1.0')
+
+    title= title
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/all.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
+  body
+    nav.navbar.fixed-top.navbar-expand-md.navbar-light.bg-light
+      .container
+        a.navbar-brand(href="/") Loc8r
+        button.navbar-toggler.navbar-toggler-left(type="button", data-toggle="collapse", data-target="#navbarMain")
+          span.navbar-toggler-icon
+        #navbarMain.collapse.navbar-collapse
+          ul.navbar-nav.ml-auto
+            li.nav-item
+              a.nav-link(href="/about") About
+    .container
+      block content
+
+      footer
+        .row
+          .col-12
+              small &copy; 2021810019 김주완
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+    script(src="/javascripts/bootstrap.min.js")
+    script(src="/javascripts/validation.js")
+    block scripts
+
+
+
+
